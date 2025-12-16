@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class gestorDeTareasTest {
+public class GestorDeTareasTest {
 
     private LocalDate fechaDeVencimiento;
     private Tarea tarea;
