@@ -19,6 +19,7 @@ public class Tarea {
         this.fechaDeVencimiento = vencimiento;
         this.fechaDeCreacion = LocalDate.now();
         this.completa = false;
+        verificarFechaDeVencimiento(vencimiento);
     }
 
     public String titulo(){
@@ -38,6 +39,10 @@ public class Tarea {
     }
 
     public Boolean estaVencida(){
+        if (completa) {
+            return !completa;
+        }
+        
         return fechaDeVencimiento.isBefore(LocalDate.now());
     }
 
@@ -47,17 +52,23 @@ public class Tarea {
 
     public void modificarTitulo(String tituloNuevo){
         verificarCadena(tituloNuevo,campoTitulo);
+        verificarSiEstaCompleta();
         this.titulo = tituloNuevo;
+        
     }
 
     public void modificarDescripcion(String descripcionNueva){
         verificarCadena(descripcionNueva, campoDescripcion);
+        verificarSiEstaCompleta();
         this.descripcion = descripcionNueva;
+        
     }
 
     public void modificarVencimiento(LocalDate vencimientoNuevo){
-        verificarFeha(vencimientoNuevo,campoVencimiento);
+        verificarFecha(vencimientoNuevo,campoVencimiento);
+        verificarSiEstaCompleta();
         this.fechaDeVencimiento = vencimientoNuevo;
+        
     }
 
     public void completar() {
@@ -67,7 +78,7 @@ public class Tarea {
     public void verficiarDatosNulos(String titulo, String descripcion, LocalDate vencimiento){
         verificarCadena(titulo, campoTitulo);
         verificarCadena(descripcion, campoDescripcion);
-        verificarFeha(vencimiento, campoVencimiento);
+        verificarFecha(vencimiento, campoVencimiento);
 
     }
 
@@ -77,8 +88,8 @@ public class Tarea {
         }
     }
 
-    public void verificarFeha(LocalDate fecha, String campo){
-        if (fecha == null || fecha.toString().trim().isEmpty()){
+    public void verificarFecha(LocalDate fecha, String campo){
+        if (fecha == null ){
             throw new IllegalArgumentException(errorElDatoEstaVacio(campo));
         }
     }
@@ -86,6 +97,41 @@ public class Tarea {
     public String errorElDatoEstaVacio(String campo){
         return "Error, en el "+campo+" ha ingresado un dato/formato invalido, o esta vacío o es nulo.";
     }
+
+    public String mostrarDatos() {
+        String datos = String.format("Titulo: %s%nDescripcion: %s%nFecha de creación: %s%nFecha de vencimiento: %s%nCompleta: %s%nVencida: %s%n", titulo,descripcion, fechaDeCreacion.toString(),fechaDeVencimiento.toString(),esVerdadero(completa),esVerdadero(estaVencida()));
+        return datos;
+        
+   }
+
+    private String esVerdadero(Boolean condicion){
+        if (condicion) {
+            return "Si";
+        }
+        return "No";
+    }
+
+    public void verificarFechaDeVencimiento(LocalDate vencimiento){
+        if (vencimiento.isBefore(fechaDeCreacion)) {
+            throw new IllegalArgumentException(errorVencimientoAnteriorACreacion());
+        }
+    }
+
+    public String errorVencimientoAnteriorACreacion(){
+        return "La fecha de vencimiento no puede ser anterior a la fecha actual.";
+    }
+
+    public void verificarSiEstaCompleta(){
+        if (completa) {
+            throw new IllegalArgumentException(errorNoSeModificanTareasCompletas());
+        }
+    }
+    
+
+    public String errorNoSeModificanTareasCompletas() {
+        return "No pueden modificarse una tarea marcada como completa.";
+    }
+
 
 
 }

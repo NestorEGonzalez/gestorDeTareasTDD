@@ -2,18 +2,16 @@ plugins {
     id 'java'
 }
 
-group = 'org.example'
-version = '1.0-SNAPSHOT'
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    // Usamos directamente JUnit Jupiter (JUnit 5)
+    testImplementation "org.junit.jupiter:junit-jupiter:5.11.0"
 }
 
 test {
+    // Necesario para que Gradle ejecute con JUnit 5
     useJUnitPlatform()
 }
