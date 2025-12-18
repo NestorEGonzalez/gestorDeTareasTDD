@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'jacoco'
 }
 
 repositories {
@@ -7,11 +8,17 @@ repositories {
 }
 
 dependencies {
-    // Usamos directamente JUnit Jupiter (JUnit 5)
     testImplementation "org.junit.jupiter:junit-jupiter:5.11.0"
 }
 
 test {
-    // Necesario para que Gradle ejecute con JUnit 5
     useJUnitPlatform()
 }
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.required = true
+    }
+}
+

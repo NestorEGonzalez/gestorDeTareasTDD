@@ -73,7 +73,7 @@ public class GestorDeTareasTest {
         Exception ex = assertThrows(IllegalArgumentException.class,()-> {
             new Tarea("Titulo", "Descripción", LocalDate.now().plusDays(-1));
         });
-        assertEquals(tarea.errorVencimientoAnteriorACreacion(), ex.getMessage());
+        assertEquals("La fecha de vencimiento no puede ser anterior a la fecha actual.", ex.getMessage());
     }
 
     @Test
@@ -82,7 +82,7 @@ public class GestorDeTareasTest {
         Exception ex = assertThrows(IllegalArgumentException.class, () -> {
             tarea.modificarTitulo("Nuevo Titulo");
         });
-        assertEquals(tarea.errorNoSeModificanTareasCompletas(), ex.getMessage());
+        assertEquals("No pueden modificarse una tarea marcada como completa.", ex.getMessage());
     }
 
     @Test
@@ -106,12 +106,12 @@ public class GestorDeTareasTest {
             tarea.modificarVencimiento(null);
         });
 
-        assertEquals(tarea.errorElDatoEstaVacio(campoTitulo), tituloNulo.getMessage());
-        assertEquals(tarea.errorElDatoEstaVacio(campoDescripcion), descripcionNula.getMessage());
-        assertEquals(tarea.errorElDatoEstaVacio(campoVencimiento), vencimientoNulo.getMessage());
-        assertEquals(tarea.errorElDatoEstaVacio(campoTitulo), tituloModificadoNulo.getMessage());
-        assertEquals(tarea.errorElDatoEstaVacio(campoDescripcion), descripionModificadaNula.getMessage());
-        assertEquals(tarea.errorElDatoEstaVacio(campoVencimiento), vencimientoModificadoNulo.getMessage());
+        assertEquals(String.format("Error, en el campo %s ha ingresado un formato inválido o el mismo está vacío o es nulo.",campoTitulo), tituloNulo.getMessage());
+        assertEquals(String.format("Error, en el campo %s ha ingresado un formato inválido o el mismo está vacío o es nulo.",campoDescripcion), descripcionNula.getMessage());
+        assertEquals(String.format("Error, en el campo %s ha ingresado un formato inválido o el mismo está vacío o es nulo.",campoVencimiento), vencimientoNulo.getMessage());
+        assertEquals(String.format("Error, en el campo %s ha ingresado un formato inválido o el mismo está vacío o es nulo.",campoTitulo), tituloModificadoNulo.getMessage());
+        assertEquals(String.format("Error, en el campo %s ha ingresado un formato inválido o el mismo está vacío o es nulo.",campoDescripcion), descripionModificadaNula.getMessage());
+        assertEquals(String.format("Error, en el campo %s ha ingresado un formato inválido o el mismo está vacío o es nulo.",campoVencimiento), vencimientoModificadoNulo.getMessage());
     }
 
     
@@ -148,17 +148,8 @@ public class GestorDeTareasTest {
     @Test
     void test10_unGestorDeTareasPuedeMostrarLosDatosDeUnaTarea(){
         gestor.agregarTarea("Titulo de prueba", "Descripcion de prueba",fecha3112);
-        String datosDeTarea = """
-                id: 1
-                Titulo: Titulo de prueba
-                Descripcion: Descripcion de prueba
-                Fecha de creación: 2025-12-17
-                Fecha de vencimiento: 2025-12-31
-                Completa: No
-                Vencida: No
-
-                """;
-        assertEquals(datosDeTarea, gestor.mostrarDatosDeTarea(1));
+        String datosEsperados = String.format("id: 1%nTitulo: Titulo de prueba%nDescripcion: Descripcion de prueba%nFecha de creación: %s%nFecha de vencimiento: %s%nCompleta: No%nVencida: No%n%n", LocalDate.now().toString(),fecha3112.toString());
+        assertEquals(datosEsperados, gestor.mostrarDatosDeTarea(1));
     }
 
     @Test
@@ -186,6 +177,14 @@ public class GestorDeTareasTest {
         String mensajeEsperado = String.format("%s%s", gestor.mostrarDatosDeTarea(1),gestor.mostrarDatosDeTarea(2));
         assertEquals(mensajeEsperado, gestor.listarTareas());
         
+    }
+
+    @Test
+    void test13_unGestorDeTareasNoPuedeDevolverUnaTareaInexistente(){
+        Exception ex = assertThrows(IllegalArgumentException.class, ()-> {
+            gestor.obtenerTarea(50);
+        });
+        assertEquals("La tarea soliitada no existe.", ex.getMessage());
     }
     
    

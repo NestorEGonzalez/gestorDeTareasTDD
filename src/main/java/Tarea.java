@@ -4,22 +4,25 @@ import java.time.LocalDate;
 public class Tarea {
     private String titulo;
     private String descripcion;
-    private final LocalDate fechaDeCreacion;
     private LocalDate fechaDeVencimiento;
-    private Boolean completa;
-    private final String campoTitulo = "Titulo";
-    private final String campoDescripcion = "Descripcion";
-    private final String campoVencimiento = "Fecha de vencimiento";
-    //DateTimeFormatter formatoDeFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private boolean completa;
+    private final LocalDate fechaDeCreacion;
+    private static final String campoTitulo = "Titulo";
+    private static final String campoDescripcion = "Descripcion";
+    private static final String campoVencimiento = "Fecha de vencimiento";
+    private static final String ERROR_CAMPO_VACIO = "Error, en el campo %s ha ingresado un formato inválido o el mismo está vacío o es nulo.";
+    private static final String ERROR_VENC_ANT_CREACION = "La fecha de vencimiento no puede ser anterior a la fecha actual.";
+    private static final String ERROR_MODIFICAR_COMPLETA= "No pueden modificarse una tarea marcada como completa.";
+    
 
     public Tarea(String titulo, String descripcion, LocalDate vencimiento){
         verficiarDatosNulos(titulo, descripcion, vencimiento);
+        verificarFechaDeVencimiento(vencimiento);
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.fechaDeVencimiento = vencimiento;
         this.fechaDeCreacion = LocalDate.now();
         this.completa = false;
-        verificarFechaDeVencimiento(vencimiento);
     }
 
     public String titulo(){
@@ -38,15 +41,15 @@ public class Tarea {
         return fechaDeCreacion;
     }
 
-    public Boolean estaVencida(){
+    public boolean estaVencida(){
         if (completa) {
-            return !completa;
+            return false;
         }
-        
         return fechaDeVencimiento.isBefore(LocalDate.now());
+       
     }
 
-    public Boolean estaCompleta(){
+    public boolean estaCompleta(){
         return completa;
     }
 
@@ -84,18 +87,14 @@ public class Tarea {
 
     public void verificarCadena(String cadena, String campo){
         if (cadena == null || cadena.trim().isEmpty()){
-            throw new IllegalArgumentException(errorElDatoEstaVacio(campo));
+            throw new IllegalArgumentException(String.format(ERROR_CAMPO_VACIO, campo));
         }
     }
 
     public void verificarFecha(LocalDate fecha, String campo){
         if (fecha == null ){
-            throw new IllegalArgumentException(errorElDatoEstaVacio(campo));
+            throw new IllegalArgumentException(String.format(ERROR_CAMPO_VACIO, campo));
         }
-    }
-
-    public String errorElDatoEstaVacio(String campo){
-        return "Error, en el "+campo+" ha ingresado un dato/formato invalido, o esta vacío o es nulo.";
     }
 
     public String mostrarDatos() {
@@ -104,7 +103,7 @@ public class Tarea {
         
    }
 
-    private String esVerdadero(Boolean condicion){
+    private String esVerdadero(boolean condicion){
         if (condicion) {
             return "Si";
         }
@@ -112,28 +111,17 @@ public class Tarea {
     }
 
     public void verificarFechaDeVencimiento(LocalDate vencimiento){
-        if (vencimiento.isBefore(fechaDeCreacion)) {
-            throw new IllegalArgumentException(errorVencimientoAnteriorACreacion());
+        if (vencimiento.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException(ERROR_VENC_ANT_CREACION);
         }
-    }
-
-    public String errorVencimientoAnteriorACreacion(){
-        return "La fecha de vencimiento no puede ser anterior a la fecha actual.";
     }
 
     public void verificarSiEstaCompleta(){
         if (completa) {
-            throw new IllegalArgumentException(errorNoSeModificanTareasCompletas());
+            throw new IllegalArgumentException(ERROR_MODIFICAR_COMPLETA);
         }
     }
     
-
-    public String errorNoSeModificanTareasCompletas() {
-        return "No pueden modificarse una tarea marcada como completa.";
-    }
-
-
-
 }
 
 
