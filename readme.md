@@ -2,7 +2,7 @@
 
 >Proyecto de gestión de tareas desarrollado en Java siguiendo la metodología TDD (Test Driven Development).
 
-##🧠 Descripción
+## 🧠 Descripción
 
 El sistema permite:
 
